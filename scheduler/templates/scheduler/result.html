@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kết quả lịch trực</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        .morning {
+            background-color: #f0f0f0; /* Màu cho ca sáng */
+        }
+        .afternoon {
+            background-color: #ffffcc; /* Màu cho ca chiều */
+        }
+        .night {
+            background-color: #e6f7ff; /* Màu cho ca đêm */
+        }
+        .off {
+            background-color: #ffb3b3; /* Màu cho ngày nghỉ */
+        }
+    </style>
+</head>
+<body>
+    <h1>Kết quả lịch trực</h1>
+    <pre>{{ notes }}</pre>
+    <table>
+        {{ result|safe }}
+    </table>
+</body>
+</html>

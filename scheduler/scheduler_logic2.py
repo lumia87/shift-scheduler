@@ -1,7 +1,9 @@
-import calendar
-from datetime import datetime, timedelta
-import pulp
+#Update: 19.6.2024 (chatGPT)
 
+from fpdf import FPDF
+from datetime import datetime, timedelta
+import os, pulp
+import calendar
 def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Tạo danh sách các ngày trong tháng
     start_date = datetime(year, month, 1)
@@ -14,7 +16,7 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Ghi chú cho các ngày cố định
     note_fixed_shifts = "*Ghi chú: Ca trực cố định:\n"
     for fixed_date, shift_info in fixed_shifts.items():
-        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date + 1).strftime('%d/%m/%Y'), str(shift_info))
+        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date+1).strftime('%d/%m/%Y'), str(shift_info))
     
     # Số lượng ca sáng, chiều, đêm của từng nhân viên (quá khứ) để cân bằng giữa các nhân viên
     shift_balance = {e: [0, 0, 0] for e in employees}
@@ -88,7 +90,7 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     total_shifts_employee = {e: sum(pulp.value(num_shifts[e][shift]) for shift in ['s', 'c', 'd']) for e in employees.keys()}
 
     # Tạo bảng kết quả dưới dạng HTML
-    html_result = "<table border='1'><tr><th>STT</th><th>MÃ NV</th><th>HỌ TÊN</th>"
+    html_result = "<tr><th>STT</th><th>MÃ NV</th><th>HỌ TÊN</th>"
     for day in days:
         html_result += f"<th>{day}</th>"
     html_result += "<th>T.S</th><th>T.C</th><th>T.Đ</th><th>T.Ca</th></tr>"
@@ -107,7 +109,5 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
             row += f"<td>{assigned_shift}</td>"
         row += f"<td>{num_s}</td><td>{num_c}</td><td>{num_d}</td><td>{total_shift}</td></tr>"
         html_result += row
-
-    html_result += "</table>"
 
     return html_result, note_fixed_shifts

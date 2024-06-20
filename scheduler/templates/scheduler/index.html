@@ -1,0 +1,68 @@
+<!-- scheduler/templates/scheduler/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nhập dữ liệu lịch trực</title>
+    <script>
+        function addEmployeeField() {
+            var container = document.getElementById("employees-container");
+            var index = container.children.length / 2 + 1;
+            var idField = document.createElement("input");
+            idField.type = "text";
+            idField.name = "id" + index;
+            idField.placeholder = "ID" + index;
+            var nameField = document.createElement("input");
+            nameField.type = "text";
+            nameField.name = "name" + index;
+            nameField.placeholder = "Tên " + index;
+            container.appendChild(idField);
+            container.appendChild(nameField);
+            container.appendChild(document.createElement("br"));
+        }
+    
+        function addFixedShiftField() {
+            var container = document.getElementById("fixed-shifts-container");
+            var newField = document.createElement("input");
+            newField.type = "text";
+            newField.name = "fixed_shift";
+            newField.placeholder = "(ID,ngày,ca)";
+            container.appendChild(newField);
+            container.appendChild(document.createElement("br"));
+        }
+    </script>
+    
+</head>
+<body>
+    <h1>Nhập dữ liệu lịch trực</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="year">Năm:</label>
+        <input type="number" id="year" name="year" value="2024" required><br><br>
+        <label for="month">Tháng:</label>
+        <input type="number" id="month" name="month" value="7" required><br><br>
+
+        <h2>Nhân viên</h2>
+        <div id="employees-container">
+            <input type="text" name="id1" placeholder="ID1" value="ID1" required>
+            <input type="text" name="name1" placeholder="Tên 1" value="lê văn thông" required><br>
+            <input type="text" name="id2" placeholder="ID2" value="ID2" required>
+            <input type="text" name="name2" placeholder="Tên 2" value="ngô văn dũng" required><br>
+            <input type="text" name="id3" placeholder="ID3" value="ID3" required>
+            <input type="text" name="name3" placeholder="Tên 3" value="nguyễn văn đài" required><br>
+            <input type="text" name="id4" placeholder="ID4" value="ID4" required>
+            <input type="text" name="name4" placeholder="Tên 4" value="trần thiện đức" required><br>
+            <input type="text" name="id5" placeholder="ID5" value="ID5" required>
+            <input type="text" name="name5" placeholder="Tên 5" value="nguyễn triệu hải" required><br>
+        </div>
+        <button type="button" onclick="addEmployeeField()">Thêm nhân viên</button><br><br>
+
+        <h2>Ca cố định (dạng chuỗi)</h2>
+        <div id="fixed-shifts-container">
+            <input type="text" name="fixed_shift" placeholder="(ID,ngày,ca)" required><br>
+        </div>
+        <button type="button" onclick="addFixedShiftField()">Thêm ca cố định</button><br><br>
+
+        <button type="submit">Tạo lịch trực</button>
+    </form>
+</body>
+</html>
