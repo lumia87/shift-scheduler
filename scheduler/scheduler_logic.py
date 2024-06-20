@@ -2,7 +2,7 @@
 
 from fpdf import FPDF
 from datetime import datetime, timedelta
-import pulp
+import os, pulp
 import calendar
 
 def generate_shift_schedule(year, month, employees, fixed_shifts):
@@ -114,7 +114,8 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
 class PDF(FPDF):
     def __init__(self, year, month):
         super().__init__()
-        self.add_font('DejaVuSans', '', 'DejaVuSans.ttf')
+        font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'DejaVuSans.ttf')
+        self.add_font('DejaVuSans', '', font_path, uni=True)
         self.month = month
 
         self.start_date = datetime(year, month, 1)
