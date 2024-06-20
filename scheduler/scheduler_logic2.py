@@ -1,9 +1,6 @@
-#Update: 19.6.2024 (chatGPT)
-
-from fpdf import FPDF
-from datetime import datetime, timedelta
-import os, pulp
 import calendar
+from datetime import datetime, timedelta
+import pulp
 
 def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Tạo danh sách các ngày trong tháng
@@ -17,7 +14,7 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Ghi chú cho các ngày cố định
     note_fixed_shifts = "*Ghi chú: Ca trực cố định:\n"
     for fixed_date, shift_info in fixed_shifts.items():
-        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date+1).strftime('%d/%m/%Y'), str(shift_info))
+        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date + 1).strftime('%d/%m/%Y'), str(shift_info))
     
     # Số lượng ca sáng, chiều, đêm của từng nhân viên (quá khứ) để cân bằng giữa các nhân viên
     shift_balance = {e: [0, 0, 0] for e in employees}
@@ -90,11 +87,14 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Tính tổng số ca sáng, chiều, đêm của mỗi nhân viên
     total_shifts_employee = {e: sum(pulp.value(num_shifts[e][shift]) for shift in ['s', 'c', 'd']) for e in employees.keys()}
 
-    # Tạo bảng kết quả dưới dạng Markdown
-    markdown_result = "| STT | MÃ NV | HỌ TÊN | " + " | ".join(days) + " |T.S|T.C|T.Đ| T.Ca |\n"
+    # Tạo bảng kết quả dưới dạng HTML
+    html_result = "<table border='1'><tr><th>STT</th><th>MÃ NV</th><th>HỌ TÊN</th>"
+    for day in days:
+        html_result += f"<th>{day}</th>"
+    html_result += "<th>T.S</th><th>T.C</th><th>T.Đ</th><th>T.Ca</th></tr>"
 
     for idx, e in enumerate(employees.keys(), start=1):
-        row = f"| {idx} | {e} | {employees[e]} | "
+        row = f"<tr><td>{idx}</td><td>{e}</td><td>{employees[e]}</td>"
         num_s = int(pulp.value(num_shifts[e]['s']))
         num_c = int(pulp.value(num_shifts[e]['c']))
         num_d = int(pulp.value(num_shifts[e]['d']))
@@ -104,78 +104,10 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
             for shift in shifts:
                 if pulp.value(shift_vars[e][day][shift]) == 1:
                     assigned_shift = shift.upper()  # Chuyển đổi sang chữ hoa
-            row += f"{assigned_shift} | "
-        row += f"{num_s} | {num_c} | {num_d} | {total_shift} |\n"
-        markdown_result += row
+            row += f"<td>{assigned_shift}</td>"
+        row += f"<td>{num_s}</td><td>{num_c}</td><td>{num_d}</td><td>{total_shift}</td></tr>"
+        html_result += row
 
-    return markdown_result, note_fixed_shifts
+    html_result += "</table>"
 
-
-class PDF(FPDF):
-    def __init__(self, year, month):
-        super().__init__()
-        font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'DejaVuSans.ttf')
-        self.add_font('DejaVuSans', '', font_path, uni=True)
-        self.month = month
-
-        self.start_date = datetime(year, month, 1)
-        self.end_date = datetime(year, month, calendar.monthrange(year, month)[1])
-
-        self.days = [(self.start_date + timedelta(days=i)).strftime('%d') for i in range((self.end_date - self.start_date).days + 1)]
-
-    def header(self):
-        self.set_font('DejaVuSans', '', 16)
-        self.cell(0, 10, f'BẢNG TRỰC CA THÁNG {self.start_date.strftime("%m/%Y")}', new_x="LMARGIN", new_y="NEXT", align='C')
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('DejaVuSans', '', 8)
-        self.cell(0, 10, 'Trang %s' % self.page_no(), new_x="LMARGIN", new_y="NEXT", align='C')
-
-    def chapter_title(self, title):
-        self.set_font('DejaVuSans', '', 8)
-        self.cell(0, 10, title, new_x="LMARGIN", new_y="NEXT", align='L')
-
-    def chapter_body(self, body):
-        self.set_font('DejaVuSans', '', 8)
-        column_width = self.w / (len(self.days) + 12)  # Số cột + 12 (cột ghi chú, STT và Tong so ca)
-        employee_column_width = column_width * 2.5  # Độ rộng cho cột tên nhân viên
-
-        cell_height = 12  # Chiều cao của mỗi ô
-
-        date_objects = [(self.start_date + timedelta(days=i)) for i in range((self.end_date - self.start_date).days + 1)]
-        day_names = [date.strftime('%A') for date in date_objects]
-
-        for row_index, row in enumerate(body.splitlines()):
-            cells = row.split('|')
-            cells = [cell.strip() for cell in cells if cell.strip()]
-            for i, cell in enumerate(cells):
-                if i == 0:
-                    self.set_fill_color(255, 255, 255)
-                    self.cell(column_width, cell_height, cell, border=1, fill=True, align='C')
-                elif i == 1:
-                    self.set_fill_color(255, 255, 255)
-                    self.cell(column_width, cell_height, cell, border=1, fill=True, align='C')
-                elif i == 2:
-                    self.set_fill_color(255, 255, 255)
-                    self.cell(employee_column_width, cell_height, cell, border=1, fill=True, align='C')
-                elif row_index == 0 and i >= 3 and i - 3 < len(day_names):
-                    day_name = day_names[i - 3]
-                    if day_name in ('Saturday', 'Sunday'):
-                        self.set_fill_color(255, 204, 204)
-                    else:
-                        self.set_fill_color(255, 255, 255)
-                    self.cell(column_width, cell_height, cell, border=1, fill=True, align='C')
-                else:
-                    if 'S' in cell:
-                        self.set_fill_color(255, 255, 102)
-                    elif 'C' in cell:
-                        self.set_fill_color(153, 204, 255)
-                    elif 'D' in cell:
-                        self.set_fill_color(255, 153, 153)
-                    elif 'Tong' in cell:
-                        self.set_fill_color(192, 192, 192)
-                    else:
-                        self.set_fill_color(255, 255, 255)
-                    self.cell(column_width, cell_height, cell, border=1, fill=True, align='C')
-            self.ln(cell_height)
+    return html_result, note_fixed_shifts

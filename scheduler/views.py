@@ -1,7 +1,6 @@
 # scheduler/views.py
 from django.http import HttpResponse
-from .scheduler_logic import generate_shift_schedule # Assuming main_function is the entry point of your script
-from .scheduler_logic import PDF
+from .scheduler_logic2 import generate_shift_schedule # Assuming main_function is the entry point of your script
 
 def index(request):
     # Dữ liệu đầu vào
@@ -25,15 +24,6 @@ def index(request):
     # Gọi hàm để giải quyết bài toán và tạo dữ liệu kết quả
 
     result, note = generate_shift_schedule(year, month, employees, fixed_shifts)
-    # Tạo và lưu file PDF từ chuỗi Markdown
-    pdf = PDF(year, month)
-    pdf.add_page(orientation='L', format='A4')
-    pdf.chapter_body(result)
-    pdf.chapter_title(note)
 
-    # Tạo tên file PDF dựa trên tháng và năm
-    pdf_file_path = f"Lich_lam_viec_thang_{month}_{year}.pdf"
-
-    pdf.output(pdf_file_path)
-    print(f"Đã lưu file PDF: {pdf_file_path}")
+    print(f"Đã xuất file")
     return HttpResponse(result)
