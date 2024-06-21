@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHẬP DỮ LIỆU LỊCH TRỰC</title>
     <style>
         body {
@@ -26,20 +28,20 @@
             width: 100px;
             font-weight: bold;
         }
-        input[type="number"], input[type="text"] {
-            width: calc(50% - 55px);
-            padding: 5px;
+        input[type="number"], input[type="text"], input[type="submit"] {
+            width: calc(100% - 22px);
+            padding: 10px;
             margin: 5px 0 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            box-sizing: border-box;
         }
         .id-input {
-            width: 30px; /* Độ rộng ID nhỏ hơn */
-            margin-right: 10px;
+            width: 100%; /* Full width on mobile */
+            margin-bottom: 10px;
         }
-
         .name-input {
-            width: calc(50% - 70px); /* Độ rộng Họ tên điều chỉnh lại */
+            width: 100%; /* Full width on mobile */
         }
         button {
             background-color: #4CAF50;
@@ -53,6 +55,7 @@
             margin: 10px 2px;
             cursor: pointer;
             border-radius: 5px;
+            width: 100%; /* Full width on mobile */
         }
         h2 {
             color: #4CAF50;
@@ -61,15 +64,25 @@
             background-color: #e9e9e9;
             padding: 10px;
             border-radius: 5px;
-            list-style-position: inside; /* Đẩy dấu chấm tròn vào bên trong */
+            list-style-position: inside;
         }
         ul li {
             margin: 5px 0;
         }
+
+        /* Media Query for Responsive Layout */
+        @media (min-width: 600px) {
+            .id-input {
+                width: 30px; /* Small width for ID on larger screens */
+                margin-right: 10px;
+            }
+            .name-input {
+                width: calc(50% - 70px); /* Adjusted width for names on larger screens */
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Nhập dữ liệu lịch trực</h1>
     <form method="post">
         {% csrf_token %}
         <label for="year">Năm:</label>

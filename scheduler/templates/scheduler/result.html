@@ -1,14 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả lịch trực</title>
     <style>
-        table, th, td {
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
             border: 1px solid black;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         th, td {
-            padding: 5px;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        td {
+            border: 1px solid #ddd;
         }
         .shift-s {
             background-color: #FFC107; /* Vàng cho ca sáng */
@@ -22,12 +43,43 @@
         .shift-x {
             background-color: #E0E0E0; /* Xám cho nghỉ */
         }
+        .notes {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media only screen and (max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            th, td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+            th:before, td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+            th:before {
+                content: "Ngày";
+                font-weight: bold;
+            }
+            td:before {
+                content: attr(data-label);
+                font-weight: normal;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>LỊCH TRỰC THÁNG {{ month }}/{{ year }}</h1>
-    <i>Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</i>
-    <pre>{{ notes }}</pre>
+    <p class="notes">Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</p>
     <table>
         {{ result|safe }}
     </table>
