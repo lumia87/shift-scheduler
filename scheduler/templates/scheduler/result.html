@@ -8,25 +8,25 @@
             border-collapse: collapse;
         }
         th, td {
-            padding: 8px;
-            text-align: center;
+            padding: 5px;
         }
-        .morning {
-            background-color: #f0f0f0; /* Màu cho ca sáng */
+        .shift-s {
+            background-color: #FFC107; /* Vàng cho ca sáng */
         }
-        .afternoon {
-            background-color: #ffffcc; /* Màu cho ca chiều */
+        .shift-c {
+            background-color: #03A9F4; /* Xanh dương cho ca chiều */
         }
-        .night {
-            background-color: #e6f7ff; /* Màu cho ca đêm */
+        .shift-d {
+            background-color: #9C27B0; /* Tím cho ca đêm */
         }
-        .off {
-            background-color: #ffb3b3; /* Màu cho ngày nghỉ */
+        .shift-x {
+            background-color: #E0E0E0; /* Xám cho nghỉ */
         }
     </style>
 </head>
 <body>
-    <h1>Kết quả lịch trực</h1>
+    <h1>LỊCH TRỰC THÁNG {{ month }}/{{ year }}</h1>
+    <i>Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</i>
     <pre>{{ notes }}</pre>
     <table>
         {{ result|safe }}

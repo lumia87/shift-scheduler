@@ -14,9 +14,9 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     shifts = ['s', 'c', 'd', 'x']  # Sáng, Chiều, Đêm, Nghỉ
 
     # Ghi chú cho các ngày cố định
-    note_fixed_shifts = "*Ghi chú: Ca trực cố định:\n"
+    note_fixed_shifts = "*GHI CHÚ: CA TRỰC CỐ ĐỊNH:\n"
     for fixed_date, shift_info in fixed_shifts.items():
-        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date+1).strftime('%d/%m/%Y'), str(shift_info))
+        note_fixed_shifts += "  - Ngày {}: {}\n".format(datetime(year, month, fixed_date).strftime('%d/%m/%Y'), str(shift_info))
     
     # Số lượng ca sáng, chiều, đêm của từng nhân viên (quá khứ) để cân bằng giữa các nhân viên
     shift_balance = {e: [0, 0, 0] for e in employees}
@@ -50,7 +50,7 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
     for fixed_date, shift_info in fixed_shifts.items():
         for e, day_shift in shift_info.items():
             if day_shift in shifts:
-                prob += shift_vars[e][days[fixed_date]][day_shift] == 1
+                prob += shift_vars[e][days[fixed_date-1]][day_shift] == 1 # fixed_date-1 để chuyển từ 1-based index sang 0-based index cho danh sách days
 
     # Tạo các biến để đếm số ca sáng, chiều, đêm cho mỗi nhân viên
     num_shifts = {e: {shift: pulp.lpSum(shift_vars[e][day][shift] for day in days) for shift in ['s', 'c', 'd']} for e in employees.keys()}
@@ -103,10 +103,12 @@ def generate_shift_schedule(year, month, employees, fixed_shifts):
         total_shift = total_shifts_employee[e]
         for day in days:
             assigned_shift = 'x'  # Mặc định là ngày nghỉ
+            shift_class = 'shift-x'
             for shift in shifts:
                 if pulp.value(shift_vars[e][day][shift]) == 1:
                     assigned_shift = shift.upper()  # Chuyển đổi sang chữ hoa
-            row += f"<td>{assigned_shift}</td>"
+                    shift_class = f"shift-{shift}"
+            row += f"<td class='{shift_class}'>{assigned_shift}</td>"
         row += f"<td>{num_s}</td><td>{num_c}</td><td>{num_d}</td><td>{total_shift}</td></tr>"
         html_result += row
 

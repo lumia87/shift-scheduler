@@ -6,17 +6,20 @@ from .scheduler_logic2 import generate_shift_schedule
 def parse_fixed_shifts(fixed_shifts_str_list):
     """
     Chuyển đổi danh sách chuỗi ca cố định thành dạng dictionary.
-    Ví dụ: ["(ID1,0,s)", "(ID2,0,c)", "(ID3,0,d)"] -> {0: {'ID1': 's', 'ID2': 'c', 'ID3': 'd'}}
+    Ví dụ: ["ID1,0,s; ID2,0,c; ID3,0,d"] -> {0: {'ID1': 's', 'ID2': 'c', 'ID3': 'd'}}
     """
     fixed_shifts = {}
-    for entry in fixed_shifts_str_list:
-        entry = entry.strip().strip("()")
+    fixed_shifts_list=fixed_shifts_str_list[0].split(";")
+    print(fixed_shifts_list)
+    for entry in fixed_shifts_list:
+        entry = entry.strip()
         if entry:
             emp_id, day, shift = entry.split(",")
             day = int(day)
-            if day not in fixed_shifts:
-                fixed_shifts[day] = {}
-            fixed_shifts[day][emp_id] = shift
+            if shift:  # Chỉ thêm nếu shift không rỗng
+                if day not in fixed_shifts:
+                    fixed_shifts[day] = {}
+                fixed_shifts[day][emp_id] = shift
     return fixed_shifts
 
 def index(request):
@@ -38,6 +41,11 @@ def index(request):
         # Tạo lịch trực
         html_result, note_fixed_shifts = generate_shift_schedule(year, month, employees, fixed_shifts)
 
-        return render(request, 'scheduler/result.html', {'result': html_result, 'notes': note_fixed_shifts})
+        return render(request, 'scheduler/result.html', {
+            'result': html_result, 
+            'notes': note_fixed_shifts,
+            'year': year,
+            'month': month
+        })
 
     return render(request, 'scheduler/index.html')
