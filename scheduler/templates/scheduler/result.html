@@ -16,7 +16,7 @@
         }
         table {
             width: 100%;
-            border: 1px solid black;
+            border: 1px solid #ddd;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
@@ -32,23 +32,23 @@
             border: 1px solid #ddd;
         }
         .shift-s {
-            background-color: #FFC107; /* Vàng cho ca sáng */
+            background-color: #d4edda; /* Soft green for morning shift */
         }
         .shift-c {
-            background-color: #03A9F4; /* Xanh dương cho ca chiều */
+            background-color: #fff3cd; /* Soft yellow for afternoon shift */
         }
         .shift-d {
-            background-color: #9C27B0; /* Tím cho ca đêm */
+            background-color: #f8d7da; /* Soft red for night shift */
         }
         .shift-x {
-            background-color: #E0E0E0; /* Xám cho nghỉ */
+            background-color: #ffffff; /* White for off shift */
         }
         .notes {
             font-style: italic;
             margin-bottom: 20px;
         }
 
-        /* Responsive adjustments */
+        <!-- /* Responsive adjustments */
         @media only screen and (max-width: 600px) {
             table, thead, tbody, th, td, tr {
                 display: block;
@@ -74,14 +74,16 @@
                 content: attr(data-label);
                 font-weight: normal;
             }
-        }
+        } -->
     </style>
 </head>
 <body>
     <h1>LỊCH TRỰC THÁNG {{ month }}/{{ year }}</h1>
-    <p class="notes">Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</p>
+    <p class="notes">Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, theo các nhóm, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</p>
+    <div>{{notes|safe}}</div>
     <table>
         {{ result|safe }}
     </table>
+    
 </body>
 </html>

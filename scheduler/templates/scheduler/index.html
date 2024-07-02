@@ -90,30 +90,26 @@
         <label for="month">Tháng:</label>
         <input type="number" id="month" name="month" value="7" required><br>
 
-        <h2>Nhân viên</h2>
+        <h2>Nhóm trực</h2>
         <div id="employees-container">
-            <input type="text" class="id-input" name="id1" placeholder="ID1" value="ID1" required>
-            <input type="text" class="name-input" name="name1" placeholder="Tên 1" value="Lê Văn Thông" required><br>
-            <input type="text" class="id-input" name="id2" placeholder="ID2" value="ID2" required>
-            <input type="text" class="name-input" name="name2" placeholder="Tên 2" value="Ngô Văn Dũng" required><br>
-            <input type="text" class="id-input" name="id3" placeholder="ID3" value="ID3" required>
-            <input type="text" class="name-input" name="name3" placeholder="Tên 3" value="Nguyễn Văn Đài" required><br>
-            <input type="text" class="id-input" name="id4" placeholder="ID4" value="ID4" required>
-            <input type="text" class="name-input" name="name4" placeholder="Tên 4" value="Trần Thiện Đức" required><br>
-            <input type="text" class="id-input" name="id5" placeholder="ID5" value="ID5" required>
-            <input type="text" class="name-input" name="name5" placeholder="Tên 5" value="Nguyễn Triệu Hải" required><br>
+            <label>Group 1</label><input type="text" class="name-input" name="team1" placeholder="group 1" value="Minh.VCA, Duy.NT, Hiếu.LT, Long.TTP" required><br>
+            <label>Group 2</label><input type="text" class="name-input" name="team2" placeholder="group 2" value="Bách.ĐT, Thịnh.LT, Tiến.UQ, Trình.HD" required><br>
+            <label>Group 3 </label><input type="text" class="name-input" name="team3" placeholder="group 3" value="Dung.NT, Duy.NK, Hoàng.NV, Trình.BV" required><br>
+            <label>Group 4 </label><input type="text" class="name-input" name="team4" placeholder="group 4" value="Thư.LT, Nghĩa.ĐC, Tiệp.ĐG, Huy.LL" required><br>
+            <label>Group 5 </label><input type="text" class="name-input" name="team5" placeholder="group 5" value="Yên.NV, Tuấn.PA, Thịnh.TTP, Minh.LH" required><br>
+            <label>Group 6 </label><input type="text" class="name-input" name="team6" placeholder="group 6" value="Tuấn.NV, Tùng.NT, An.TT, Khánh.TB" required><br>
         </div>
 
         <h2>Ca cố định</h2>
         <p>Cấu trúc nhập:</p>
         <ul>
-            <li>ID1,1,s nghĩa là nhân sự <b>ID1</b>, làm ngày <b>1</b> vào ca <b>Sáng</b></li>
-            <li>Ký hiệu 3 ca sáng, chiều, đêm: : s, c, d</li>
-            <li>Phân tách các ca cố định của các nhân sự bởi dấu <b>;</b></li>
+            <li>1,g1,s nghĩa là ngày <b>1</b>, Group <b>1</b> vào ca <b>Sáng</b></li>
+            <li>Ký hiệu 3 ca sáng, chiều, đêm: s, c, d</li>
+            <li>Phân tách các ca cố định của các nhóm bởi dấu <b>;</b></li>
         </ul>
         
         <div id="fixed-shifts-container">
-            <input type="text" name="fixed_shift" placeholder="ID1,1,s;ID2,1,c;ID2,2,d;..." ><br>
+            <input type="text" name="fixed_shift" placeholder="1,g1,s;1,g2,c;1,g3,d;..." value="1,g1,s;1,g2,c;1,g3,d"><br>
         </div>
         <button type="submit">TẠO LỊCH TRỰC</button>
     </form>

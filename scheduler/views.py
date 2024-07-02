@@ -1,25 +1,25 @@
 # scheduler/views.py
 from django.shortcuts import render
 from django.http import HttpResponse
-from .scheduler_logic2 import generate_shift_schedule
+from .scheduler_logic3 import generate_shift_schedule
 
 def parse_fixed_shifts(fixed_shifts_str_list):
     """
     Chuyển đổi danh sách chuỗi ca cố định thành dạng dictionary.
-    Ví dụ: ["ID1,0,s; ID2,0,c; ID3,0,d"] -> {0: {'ID1': 's', 'ID2': 'c', 'ID3': 'd'}}
+    Ví dụ: ["1,g1,s; 1,g2,c; 1,g3,d"] -> {0: {0: 's', 1: 'c', 2: 'd'}}
     """
     fixed_shifts = {}
     fixed_shifts_list=fixed_shifts_str_list[0].split(";")
-    print(fixed_shifts_list)
     for entry in fixed_shifts_list:
         entry = entry.strip()
         if entry:
-            emp_id, day, shift = entry.split(",")
+            day, gr_id, shift = entry.split(",")
             day = int(day)
+            gr_id =int(gr_id[1:])
             if shift:  # Chỉ thêm nếu shift không rỗng
                 if day not in fixed_shifts:
                     fixed_shifts[day] = {}
-                fixed_shifts[day][emp_id] = shift
+                fixed_shifts[day][gr_id] = shift
     return fixed_shifts
 
 def index(request):
@@ -28,18 +28,20 @@ def index(request):
         year = int(request.POST['year'])
         month = int(request.POST['month'])
 
-        employees = {}
+        teams = []
         i = 1
-        while f'id{i}' in request.POST and f'name{i}' in request.POST:
-            employees[request.POST[f'id{i}']] = request.POST[f'name{i}']
+        while f'team{i}' in request.POST:
+            t = request.POST[f'team{i}'].split(",")
+            teams.append(t)
             i += 1
+  
 
         # Xử lý chuỗi cho ca cố định
         fixed_shifts_str_list = request.POST.getlist('fixed_shift')
         fixed_shifts = parse_fixed_shifts(fixed_shifts_str_list)
 
         # Tạo lịch trực
-        html_result, note_fixed_shifts = generate_shift_schedule(year, month, employees, fixed_shifts)
+        html_result, note_fixed_shifts = generate_shift_schedule(year, month, teams, fixed_shifts)
 
         return render(request, 'scheduler/result.html', {
             'result': html_result, 
