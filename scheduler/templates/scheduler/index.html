@@ -80,6 +80,19 @@
                 width: calc(50% - 70px); /* Adjusted width for names on larger screens */
             }
         }
+
+        /* iPhone 11 Portrait */
+        @media only screen 
+        and (device-width : 414px) 
+        and (device-height : 896px) 
+        and (-webkit-device-pixel-ratio : 2) {
+            input[type="number"], input[type="text"], input[type="submit"], button {
+                width: 100%; /* Full width on iPhone 11 */
+            }
+            .name-input {
+                width: 100%; /* Full width on iPhone 11 */
+            }
+        }
     </style>
 </head>
 <body>

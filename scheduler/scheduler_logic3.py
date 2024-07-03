@@ -6,16 +6,30 @@ import calendar
 def generate_shift_schedule(year, month, teams, fixed_shifts):
 
     shifts = ['s', 'c', 'd', 'x']  # Sáng, Chiều, Đêm, Nghỉ
+    shift_hours = {'s': 7, 'c': 7, 'd': 10, 'x': 0}  # Số giờ làm việc cho mỗi ca
+    max_hours_per_week = 40  # Số giờ làm việc tối đa mỗi tuần
+
     # Ghi chú cho các ngày cố định
     note_fixed_shifts = "Ghi chú: Ca trực cố định:<br> "
     for fixed_date, shift_info in fixed_shifts.items():
         note_fixed_shifts += "- Ngày {}: {}<br>".format(datetime(year, month, fixed_date).strftime('%d/%m/%Y'), str(shift_info))
     
-
     # Tạo danh sách các ngày trong tháng 7/2024
-    start_date = datetime(year, month, 1)
-    end_date = datetime(year, month, calendar.monthrange(year, month)[1])
+    start_date = datetime(2024, 7, 1)
+    end_date = datetime(2024, 7, 31)
     days = [(start_date + timedelta(days=i)).strftime('%d') for i in range((end_date - start_date).days + 1)]
+
+    # Xác định các tuần trong tháng
+    weeks = []
+    current_week = []
+    for day in days:
+        date_obj = datetime(year, month, int(day))
+        if date_obj.weekday() == 0 and current_week:
+            weeks.append(current_week)
+            current_week = []
+        current_week.append(day)
+    if current_week:
+        weeks.append(current_week)
 
     # Khởi tạo bài toán tối ưu
     prob = pulp.LpProblem("Team_Shift_Scheduling", pulp.LpMinimize)
@@ -69,6 +83,11 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
             prob += num_shifts[g][shift] >= average_shifts[shift] - 1
             prob += num_shifts[g][shift] <= average_shifts[shift] + 1
 
+    # Ràng buộc số giờ làm việc không vượt quá 40 giờ mỗi tuần
+    for g in range(len(teams)):
+        for week in weeks:
+            prob += pulp.lpSum(shift_hours[shift] * shift_vars[g][day][shift] for day in week for shift in shifts) <= max_hours_per_week
+
     # Giải bài toán
     prob.solve()
 
@@ -82,6 +101,13 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
             num_d = int(pulp.value(num_shifts[g]['d']))
             team_members = ', '.join(teams[g])
             print(f"Nhóm {g+1} ({team_members}): Số ca sáng = {num_s}, Số ca chiều = {num_c}, Số ca đêm = {num_d}")
+
+            # Tính và in số giờ làm việc của mỗi tuần cho nhóm hiện tại
+            for week_index, week in enumerate(weeks):
+                start_week_date = f"{year}-{month:02d}-{week[0]}"
+                end_week_date = f"{year}-{month:02d}-{week[-1]}"
+                weekly_hours = sum(shift_hours[shift] * pulp.value(shift_vars[g][day][shift]) for day in week for shift in shifts)
+                print(f"    Tuần {week_index + 1} ({start_week_date} đến {end_week_date}): {weekly_hours} giờ")
     else:
         print("Không tìm được giải pháp tối ưu.")
 
@@ -113,5 +139,4 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
     html_result += "</table>"
 
     # Tạo bảng kết quả dưới dạng HTML
-    print(html_result)
     return html_result, note_fixed_shifts        
