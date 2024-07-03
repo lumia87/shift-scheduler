@@ -48,33 +48,29 @@
             margin-bottom: 20px;
         }
 
-        <!-- /* Responsive adjustments */
-        @media only screen and (max-width: 600px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
+        /* Media Query for Responsive Layout */
+        @media (min-width: 600px) {
+            .id-input {
+                width: 30px; /* Small width for ID on larger screens */
+                margin-right: 10px;
             }
-            th, td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
+            .name-input {
+                width: calc(50% - 70px); /* Adjusted width for names on larger screens */
             }
-            th:before, td:before {
-                position: absolute;
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
+        }
+
+        /* iPhone 11 Portrait */
+        @media only screen 
+        and (device-width : 414px) 
+        and (device-height : 896px) 
+        and (-webkit-device-pixel-ratio : 2) {
+            input[type="number"], input[type="text"], input[type="submit"], button {
+                width: 100%; /* Full width on iPhone 11 */
             }
-            th:before {
-                content: "Ngày";
-                font-weight: bold;
+            .name-input {
+                width: 100%; /* Full width on iPhone 11 */
             }
-            td:before {
-                content: attr(data-label);
-                font-weight: normal;
-            }
-        } -->
+        }
     </style>
 </head>
 <body>
