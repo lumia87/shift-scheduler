@@ -14,9 +14,9 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
     for fixed_date, shift_info in fixed_shifts.items():
         note_fixed_shifts += "- Ngày {}: {}<br>".format(datetime(year, month, fixed_date).strftime('%d/%m/%Y'), str(shift_info))
     
-    # Tạo danh sách các ngày trong tháng 7/2024
-    start_date = datetime(2024, 7, 1)
-    end_date = datetime(2024, 7, 31)
+    # Tạo danh sách các ngày trong tháng mm/yyyy
+    start_date = datetime(year, month, 1)
+    end_date = datetime(year, month, calendar.monthrange(year, month)[1])
     days = [(start_date + timedelta(days=i)).strftime('%d') for i in range((end_date - start_date).days + 1)]
 
     # Xác định các tuần trong tháng
