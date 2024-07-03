@@ -1,7 +1,8 @@
 # scheduler/views.py
 from django.shortcuts import render
-from django.http import HttpResponse
 from .scheduler_logic3 import generate_shift_schedule
+from django.http import JsonResponse
+import json
 
 def parse_fixed_shifts(fixed_shifts_str_list):
     """
@@ -24,30 +25,27 @@ def parse_fixed_shifts(fixed_shifts_str_list):
 
 def index(request):
     if request.method == 'POST':
-        # Nhận dữ liệu từ biểu mẫu
-        year = int(request.POST['year'])
-        month = int(request.POST['month'])
+        year = int(request.POST.get('year'))
+        month = int(request.POST.get('month'))
+        teams = [request.POST.get(f'team{i}').split(',') for i in range(1, 7)]
+        
+        fixed_shifts_input = request.POST.get('fixed_shift')
+        fixed_shifts = {}
+        for item in fixed_shifts_input.split(';'):
+            day, group, shift = item.split(',')
+            day = int(day)
+            group = int(group[1:])  # Bỏ "g" ở đầu và chuyển đổi sang số
+            if day not in fixed_shifts:
+                fixed_shifts[day] = {}
+            fixed_shifts[day][group] = shift
 
-        teams = []
-        i = 1
-        while f'team{i}' in request.POST:
-            t = request.POST[f'team{i}'].split(",")
-            teams.append(t)
-            i += 1
-  
+        # Gọi hàm generate_shift_schedule và trả về JSON
+        result_json = generate_shift_schedule(year, month, teams, fixed_shifts)
 
-        # Xử lý chuỗi cho ca cố định
-        fixed_shifts_str_list = request.POST.getlist('fixed_shift')
-        fixed_shifts = parse_fixed_shifts(fixed_shifts_str_list)
+        # Parse kết quả JSON sang dictionary
+        result = json.loads(result_json)
 
-        # Tạo lịch trực
-        html_result, note_fixed_shifts = generate_shift_schedule(year, month, teams, fixed_shifts)
-
-        return render(request, 'scheduler/result.html', {
-            'result': html_result, 
-            'notes': note_fixed_shifts,
-            'year': year,
-            'month': month
-        })
+        # Trả về template với dữ liệu JSON
+        return render(request, 'scheduler/result.html', {'json_data': result, 'month':month, 'year':year})    
 
     return render(request, 'scheduler/index.html')

@@ -76,10 +76,38 @@
 <body>
     <h1>LỊCH TRỰC THÁNG {{ month }}/{{ year }}</h1>
     <p class="notes">Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, theo các nhóm, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</p>
-    <div>{{notes|safe}}</div>
-    <table>
-        {{ result|safe }}
-    </table>
-    
+    <div id="fixed-shifts-container"></div>
+    <div id="result"></div>
+    <script>
+        var jsonData = {{ json_data|safe }};
+        console.log(jsonData)
+        var htmlResult = '<table border="1"><tr><th>STT</th><th>Tên</th>' + jsonData.days.map(day => `<th>${day}</th>`).join('') + '<th>T.S</th><th>T.C</th><th>T.Đ</th><th>Tổng</th></tr>';
+        var htmlFixedShifts ='<h3>Ca trực cố định:</h3>'+jsonData.note_fixed_shifts+'<br>';
+
+        jsonData.teams.forEach((team, idx) => {
+            team.members.forEach((member, memberIdx) => {
+                htmlResult += `<tr><td>${idx + 1}.${memberIdx + 1}</td><td>${member}</td>`;
+                team.days.forEach(day => {
+                    let shiftClass = 'shift-x';
+                    if (day.shift === 's') shiftClass = 'shift-s';
+                    else if (day.shift === 'c') shiftClass = 'shift-c';
+                    else if (day.shift === 'd') shiftClass = 'shift-d';
+
+                    htmlResult += `<td class="${shiftClass}">${day.shift.toUpperCase()}</td>`;
+                });
+                if (memberIdx === 0) {
+                    htmlResult += `<td rowspan="${team.members.length}">${team.shifts.s}</td>`;
+                    htmlResult += `<td rowspan="${team.members.length}">${team.shifts.c}</td>`;
+                    htmlResult += `<td rowspan="${team.members.length}">${team.shifts.d}</td>`;
+                    htmlResult += `<td rowspan="${team.members.length}">${team.total_shift}</td>`;
+                }
+                htmlResult += '</tr>';
+            });
+        });
+
+        htmlResult += '</table>';
+        document.getElementById('result').innerHTML = htmlResult;
+        document.getElementById('fixed-shifts-container').innerHTML = htmlFixedShifts;
+    </script>
 </body>
 </html>

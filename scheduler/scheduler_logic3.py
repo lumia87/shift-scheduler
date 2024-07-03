@@ -1,7 +1,7 @@
 from fpdf import FPDF
 from datetime import datetime, timedelta
 import os, pulp
-import calendar
+import calendar, json
 
 def generate_shift_schedule(year, month, teams, fixed_shifts):
 
@@ -93,50 +93,34 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
 
     # In kết quả giải bài toán ra màn hình
     status = pulp.LpStatus[prob.status]
-    print(f"Trạng thái giải bài toán: {status}")
+    result = {
+        'status': status,
+        'teams': [],
+        'note_fixed_shifts': []
+    }
+    
+    result = {"status": pulp.LpStatus[prob.status], "teams": [], "days": days}
+
     if status == 'Optimal':
         for g in range(len(teams)):
-            num_s = int(pulp.value(num_shifts[g]['s']))
-            num_c = int(pulp.value(num_shifts[g]['c']))
-            num_d = int(pulp.value(num_shifts[g]['d']))
-            team_members = ', '.join(teams[g])
-            print(f"Nhóm {g+1} ({team_members}): Số ca sáng = {num_s}, Số ca chiều = {num_c}, Số ca đêm = {num_d}")
-
-            # Tính và in số giờ làm việc của mỗi tuần cho nhóm hiện tại
-            for week_index, week in enumerate(weeks):
-                start_week_date = f"{year}-{month:02d}-{week[0]}"
-                end_week_date = f"{year}-{month:02d}-{week[-1]}"
-                weekly_hours = sum(shift_hours[shift] * pulp.value(shift_vars[g][day][shift]) for day in week for shift in shifts)
-                print(f"    Tuần {week_index + 1} ({start_week_date} đến {end_week_date}): {weekly_hours} giờ")
-    else:
-        print("Không tìm được giải pháp tối ưu.")
-
-    # Tính tổng số ca sáng, chiều, đêm của mỗi nhóm
-    total_shifts_team = {g: sum(pulp.value(num_shifts[g][shift]) for shift in ['s', 'c', 'd']) for g in range(len(teams))}
-
-    # Tạo bảng kết quả dưới dạng HTML
-    html_result = "<table border='1'><tr><th>STT</th><th>Tên</th>" + "".join(f"<th>{day}</th>" for day in days) + "<th>T.S</th><th>T.C</th><th>T.Đ</th><th>Tổng</th></tr>"
-
-    for idx, g in enumerate(range(len(teams)), start=0):
-        for i, e in enumerate(range(len(teams[g])),start=1):
-            row = f"<tr><td>{4*idx+i}</td><td>{teams[g][e]}</td>"
-            num_s = int(pulp.value(num_shifts[g]['s']))
-            num_c = int(pulp.value(num_shifts[g]['c']))
-            num_d = int(pulp.value(num_shifts[g]['d']))
-            total_shift = total_shifts_team[g]
+            team_info = {
+                "members": teams[g],
+                "shifts": {"s": int(pulp.value(num_shifts[g]['s'])), "c": int(pulp.value(num_shifts[g]['c'])), "d": int(pulp.value(num_shifts[g]['d']))},
+                "total_shift": sum(int(pulp.value(num_shifts[g][shift])) for shift in ['s', 'c', 'd']),
+                "days": []
+            }
             for day in days:
-                assigned_shift = 'X'  # Mặc định là ngày nghỉ
-                shift_class = 'shift-x'
+                assigned_shift = 'x'  # Mặc định là ngày nghỉ
                 for shift in shifts:
                     if pulp.value(shift_vars[g][day][shift]) == 1:
-                        shift_class = f"shift-{shift}"
-                        assigned_shift = shift.upper()  # Chuyển đổi sang chữ hoa
+                        assigned_shift = shift
 
-                row += f"<td class='{shift_class}'>{assigned_shift}</td>"
-            row += f"<td>{num_s}</td><td>{num_c}</td><td>{num_d}</td><td>{total_shift}</td></tr>"
-            html_result += row
+                team_info["days"].append({"day": day, "shift": assigned_shift})
+            result["teams"].append(team_info)
 
-    html_result += "</table>"
+        # Ghi chú cho các ngày cố định
+        result['note_fixed_shifts'] = [f"Ngày {datetime(year, month, fixed_date).strftime('%d/%m/%Y')}: {shift_info}" for fixed_date, shift_info in fixed_shifts.items()]
+    else:
+        result['message'] = "Không tìm được giải pháp tối ưu."
 
-    # Tạo bảng kết quả dưới dạng HTML
-    return html_result, note_fixed_shifts        
+    return json.dumps(result)
