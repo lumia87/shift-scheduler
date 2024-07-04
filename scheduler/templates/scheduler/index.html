@@ -25,7 +25,7 @@
         }
         label {
             display: inline-block;
-            width: 100px;
+            width: 300px;
             font-weight: bold;
         }
         input[type="number"], input[type="text"], input[type="submit"] {
@@ -102,15 +102,17 @@
         <input type="number" id="year" name="year" value="2024" required><br>
         <label for="month">Tháng:</label>
         <input type="number" id="month" name="month" value="7" required><br>
-
+        <label for="max_hours_per_week">Số giờ làm việc tối đa tuần:</label>
+        <input type="number" id="max_hours_per_week" name="max_hours_per_week">
+        <br>
         <h2>Nhóm trực</h2>
         <div id="employees-container">
             <label>Group 1</label><input type="text" class="name-input" name="team1" placeholder="group 1" value="Minh.VCA, Duy.NT, Hiếu.LT, Long.TTP" required><br>
             <label>Group 2</label><input type="text" class="name-input" name="team2" placeholder="group 2" value="Bách.ĐT, Thịnh.LT, Tiến.UQ, Trình.HD" required><br>
-            <label>Group 3 </label><input type="text" class="name-input" name="team3" placeholder="group 3" value="Dung.NT, Duy.NK, Hoàng.NV, Trình.BV" required><br>
-            <label>Group 4 </label><input type="text" class="name-input" name="team4" placeholder="group 4" value="Thư.LT, Nghĩa.ĐC, Tiệp.ĐG, Huy.LL" required><br>
-            <label>Group 5 </label><input type="text" class="name-input" name="team5" placeholder="group 5" value="Yên.NV, Tuấn.PA, Thịnh.TTP, Minh.LH" required><br>
-            <label>Group 6 </label><input type="text" class="name-input" name="team6" placeholder="group 6" value="Tuấn.NV, Tùng.NT, An.TT, Khánh.TB" required><br>
+            <label>Group 3 </label><input type="text" class="name-input" name="team3" placeholder="group 3" value="Dung.NT, Duy.NK, Hoàng.NV, Trình.BV" ><br>
+            <label>Group 4 </label><input type="text" class="name-input" name="team4" placeholder="group 4" value="Thư.LT, Nghĩa.ĐC, Tiệp.ĐG, Huy.LL" ><br>
+            <label>Group 5 </label><input type="text" class="name-input" name="team5" placeholder="group 5" value="Yên.NV, Tuấn.PA, Thịnh.TTP, Minh.LH"><br>
+            <label>Group 6 </label><input type="text" class="name-input" name="team6" placeholder="group 6" value="Tuấn.NV, Tùng.NT, An.TT, Khánh.TB"><br>
         </div>
 
         <h2>Ca cố định</h2>
@@ -119,6 +121,7 @@
             <li>1,g1,s nghĩa là ngày <b>1</b>, Group <b>1</b> vào ca <b>Sáng</b></li>
             <li>Ký hiệu 3 ca sáng, chiều, đêm: s, c, d</li>
             <li>Phân tách các ca cố định của các nhóm bởi dấu <b>;</b></li>
+            <li>Xóa nhóm nếu chỉ dùng ít hơn 6 kíp <b>;</b></li>
         </ul>
         
         <div id="fixed-shifts-container">

@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 import os, pulp
 import calendar, json
 
-def generate_shift_schedule(year, month, teams, fixed_shifts):
+def generate_shift_schedule(year, month, teams, fixed_shifts, max_hours_per_week=40):
 
     shifts = ['s', 'c', 'd', 'x']  # Sáng, Chiều, Đêm, Nghỉ
     shift_hours = {'s': 7, 'c': 7, 'd': 10, 'x': 0}  # Số giờ làm việc cho mỗi ca
-    max_hours_per_week = 40  # Số giờ làm việc tối đa mỗi tuần
+    # max_hours_per_week = 40  # Số giờ làm việc tối đa mỗi tuần
 
     # Ghi chú cho các ngày cố định
     note_fixed_shifts = "Ghi chú: Ca trực cố định:<br> "
@@ -83,7 +83,7 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
             prob += num_shifts[g][shift] >= average_shifts[shift] - 1
             prob += num_shifts[g][shift] <= average_shifts[shift] + 1
 
-    # Ràng buộc số giờ làm việc không vượt quá 40 giờ mỗi tuần
+    # Ràng buộc số giờ làm việc không vượt quá 40 giờ mỗi tuần theo EVN, còn theo luật là 48 giờ.
     for g in range(len(teams)):
         for week in weeks:
             prob += pulp.lpSum(shift_hours[shift] * shift_vars[g][day][shift] for day in week for shift in shifts) <= max_hours_per_week
@@ -93,13 +93,8 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
 
     # In kết quả giải bài toán ra màn hình
     status = pulp.LpStatus[prob.status]
-    result = {
-        'status': status,
-        'teams': [],
-        'note_fixed_shifts': []
-    }
     
-    result = {"status": pulp.LpStatus[prob.status], "teams": [], "days": days}
+    result = {"year":year, "month":month, "status": pulp.LpStatus[prob.status], "teams": [], "days": days, 'note_fixed_shifts': []}
 
     if status == 'Optimal':
         for g in range(len(teams)):
@@ -117,10 +112,9 @@ def generate_shift_schedule(year, month, teams, fixed_shifts):
 
                 team_info["days"].append({"day": day, "shift": assigned_shift})
             result["teams"].append(team_info)
-
+        result['status'] = "Optimal"
         # Ghi chú cho các ngày cố định
         result['note_fixed_shifts'] = [f"Ngày {datetime(year, month, fixed_date).strftime('%d/%m/%Y')}: {shift_info}" for fixed_date, shift_info in fixed_shifts.items()]
     else:
-        result['message'] = "Không tìm được giải pháp tối ưu."
-
+        result['status'] = "Không tìm được lời giải"
     return json.dumps(result)

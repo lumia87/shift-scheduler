@@ -19,6 +19,7 @@
             border: 1px solid #ddd;
             border-collapse: collapse;
             margin-bottom: 20px;
+            margin-top: 20px; /* Thêm khoảng cách bên trên bảng */
         }
         th, td {
             padding: 8px;
@@ -46,6 +47,21 @@
         .notes {
             font-style: italic;
             margin-bottom: 20px;
+        }
+
+        a.download-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        a.download-button:hover {
+            background-color: #45a049;
         }
 
         /* Media Query for Responsive Layout */
@@ -77,10 +93,13 @@
     <h1>LỊCH TRỰC THÁNG {{ month }}/{{ year }}</h1>
     <p class="notes">Lịch trực được lập theo tiêu chí: Được ưu tiên sắp ca cố định một số ngày, theo các nhóm, các ca trực trong tháng tương đương, không đi 2 ca liên tục, mỗi tháng được nghỉ ít nhất 4 ngày</p>
     <div id="fixed-shifts-container"></div>
+    {% if request.session.schedule_json %}
+    <a href="{% url 'json_to_excel' %}" class="download-button">Download Excel</a>
+    {% endif %}
     <div id="result"></div>
     <script>
         var jsonData = {{ json_data|safe }};
-        console.log(jsonData)
+
         var htmlResult = '<table border="1"><tr><th>STT</th><th>Tên</th>' + jsonData.days.map(day => `<th>${day}</th>`).join('') + '<th>T.S</th><th>T.C</th><th>T.Đ</th><th>Tổng</th></tr>';
         var htmlFixedShifts ='<h3>Ca trực cố định:</h3>'+jsonData.note_fixed_shifts+'<br>';
 
