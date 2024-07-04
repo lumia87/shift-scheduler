@@ -1,6 +1,5 @@
-from fpdf import FPDF
 from datetime import datetime, timedelta
-import os, pulp
+import pulp
 import calendar, json
 
 def generate_shift_schedule(year, month, teams, fixed_shifts, max_hours_per_week=40):

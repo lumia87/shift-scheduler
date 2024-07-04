@@ -3,7 +3,6 @@ from django.shortcuts import render
 from .scheduler_logic3 import generate_shift_schedule
 from django.http import HttpResponse
 import json
-import pandas as pd
 from openpyxl import Workbook # type: ignore
 from openpyxl.styles import PatternFill # type: ignore
 

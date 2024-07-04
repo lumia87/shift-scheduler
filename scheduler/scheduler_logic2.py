@@ -1,8 +1,7 @@
 #Update: 19.6.2024 (chatGPT)
 
-from fpdf import FPDF
 from datetime import datetime, timedelta
-import os, pulp
+import pulp
 import calendar
 def generate_shift_schedule(year, month, employees, fixed_shifts):
     # Tạo danh sách các ngày trong tháng
