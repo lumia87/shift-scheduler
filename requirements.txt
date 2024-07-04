@@ -1,6 +1,4 @@
 Django==5.0.6
 django_heroku==0.3.1
-fpdf==1.7.2
-fpdf2==2.7.9
 openpyxl==3.1.5
 PuLP==2.8.0
